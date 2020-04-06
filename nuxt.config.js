@@ -28,13 +28,14 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
+    '~/plugins/stitch.js'
   ],
   /*
-  ** Nuxt.js dev-modules
+  ** Nuxt.js dev-modules 
   */
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
-    '@nuxtjs/eslint-module'
+    ['@nuxtjs/eslint-module', { fix: true }]
   ],
   /*
   ** Nuxt.js modules
@@ -51,6 +52,9 @@ export default {
   */
   axios: {
   },
+  env: {
+    apiKey: process.env.API_KEY 
+  },
   /*
   ** Build configuration
   */
@@ -66,6 +70,8 @@ export default {
     ** You can extend webpack config here
     */
     extend(config, ctx) {
+        config.node = { fs: 'empty' };
+      
     }
   }
 }
