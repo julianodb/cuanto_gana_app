@@ -1,3 +1,14 @@
+import {
+  Stitch,
+  AnonymousCredential,
+  RemoteMongoClient
+} from 'mongodb-stitch-server-sdk'
+const client = Stitch.hasAppClient('cuantoganachile-cdttj') ? Stitch.defaultAppClient : Stitch.initializeDefaultAppClient('cuantoganachile-cdttj')
+const mongodb = client.getServiceClient(
+  RemoteMongoClient.factory,
+  'mongodb-atlas'
+)
+client.auth.loginWithCredential(new AnonymousCredential())
 
 export default {
   mode: 'universal',
@@ -59,6 +70,23 @@ export default {
   },
   env: {
     apiKey: process.env.API_KEY
+  },
+  generate: {
+    routes () {
+        return mongodb.db('remuneracion').collection('05')
+        .aggregate([
+          {
+            $group: {
+              _id: {
+                name: '$name'
+              }
+            }
+          }]).toArray().then( result => {
+            console.log(result)
+            return result.map(item => '/' + item._id.name)
+          }
+          )
+      }
   },
   /*
   ** Build configuration

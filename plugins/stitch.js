@@ -3,7 +3,7 @@ import {
   AnonymousCredential,
   RemoteMongoClient
 } from 'mongodb-stitch-server-sdk'
-const client = Stitch.initializeDefaultAppClient('cuantoganachile-cdttj')
+const client = Stitch.hasAppClient('cuantoganachile-cdttj') ? Stitch.defaultAppClient : Stitch.initializeDefaultAppClient('cuantoganachile-cdttj')
 const mongodb = client.getServiceClient(
   RemoteMongoClient.factory,
   'mongodb-atlas'
