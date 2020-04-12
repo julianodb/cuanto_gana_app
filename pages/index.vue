@@ -205,6 +205,8 @@ export default {
       }
     },
     gotoPage (page) {
+      if (page < 1) { return }
+      if (page > this.totalPages) { return }
       if (this.currentPage === page) { return }
       this.clickedPage = page
       this.search()
