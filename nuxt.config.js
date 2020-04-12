@@ -82,7 +82,7 @@ export default {
                 name: '$name'
               }
             }
-          }]).toArray().then( result => result.map(item => '/' + item._id.name)
+          }]).toArray().then( result => result.map(item => '/' + encodeURIComponent(item._id.name))
           )
       }
   },

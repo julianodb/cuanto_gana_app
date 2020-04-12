@@ -185,8 +185,8 @@ export default {
           this.updatePagination()
           this.searchResult = items.map((item) => {
             return {
-              uri: '/' + item._id.name,
-              str: decodeURIComponent(item._id.name)
+              uri: '/' + encodeURIComponent(item._id.name),
+              str: item._id.name
             }
           })
           this.performingSearch = false
