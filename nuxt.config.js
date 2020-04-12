@@ -69,9 +69,10 @@ export default {
   axios: {
   },
   env: {
-    apiKey: process.env.API_KEY
+    apiKey: process.env.API_KEY 
   },
   generate: {
+    fallback: true,
     routes () {
         return mongodb.db('remuneracion').collection('05')
         .aggregate([
@@ -81,10 +82,7 @@ export default {
                 name: '$name'
               }
             }
-          }]).toArray().then( result => {
-            console.log(result)
-            return result.map(item => '/' + item._id.name)
-          }
+          }]).toArray().then( result => result.map(item => '/' + item._id.name)
           )
       }
   },
@@ -104,6 +102,13 @@ export default {
     */
     extend (config, ctx) {
       config.node = { fs: 'empty' }
+      if (!ctx.isServer) { 
+        config.resolve.alias = { 
+          ...config.resolve.alias, 
+          'mongodb-stitch-server-sdk': 'mongodb-stitch-browser-sdk'
+        }
+      }
+      return config
     }
   }
 }
