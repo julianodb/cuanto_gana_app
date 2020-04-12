@@ -23,13 +23,16 @@
         </div>
       </div>
     </div>
-    <nuxt-link
-      v-for="name in searchResult"
-      :key="name"
-      :to="name"
-    >
-      {{ name }}
-    </nuxt-link>
+    <div class="list is-hoverable">
+      <nuxt-link
+        v-for="name in searchResult"
+        :key="name.uri"
+        :to="name.uri"
+        class="list-item"
+      >
+        {{ name.str }}
+      </nuxt-link>
+    </div>
     <nav
       class="pagination is-centered"
       role="navigation"
@@ -180,7 +183,12 @@ export default {
               })
           }
           this.updatePagination()
-          this.searchResult = items.map(item => '/' + item._id.name)
+          this.searchResult = items.map((item) => {
+            return {
+              uri: '/' + item._id.name,
+              str: decodeURIComponent(item._id.name)
+            }
+          })
           this.performingSearch = false
         })
     },
