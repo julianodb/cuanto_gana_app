@@ -62,14 +62,11 @@ export default {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios'
   ],
-  /*
-  ** Axios module configuration
-  ** See https://axios.nuxtjs.org/options
-  */
   axios: {
+    retry: true
   },
   env: {
-    apiKey: process.env.API_KEY 
+    apiKey: process.env.API_KEY
   },
   generate: {
     fallback: true,

@@ -110,7 +110,7 @@ const mongodb = client.getServiceClient(
   RemoteMongoClient.factory,
   'mongodb-atlas'
 )
-const db = mongodb.db('remuneracion')
+const collection = mongodb.db('remuneracion').collection('05')
 const resultsPerPage = 10
 
 export default {
@@ -136,7 +136,7 @@ export default {
   },
   methods: {
     updateSearch (updateTotalPages = false) {
-      db.collection('05')
+      collection
         .aggregate([
           {
             $match: {
@@ -155,7 +155,7 @@ export default {
         ]).toArray()
         .then((items) => {
           if (updateTotalPages) {
-            db.collection('05')
+            collection
               .aggregate([
                 {
                   $match: {

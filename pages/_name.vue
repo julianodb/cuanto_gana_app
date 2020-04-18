@@ -18,11 +18,11 @@ export default {
   },
   async asyncData (context) {
     const name = context.params.name
-    const paymentIds = await context.app.stitchDB.collection('05')
+    const paymentIds = await context.app.stitchCollection
       .aggregate([
         {
           $match: {
-            name: encodeURIComponent(name)
+            name: name
           }
         },
         {
@@ -35,7 +35,7 @@ export default {
         }]).toArray()
     const paymentsDataPreliminary = await Promise.all(paymentIds.flatMap(person =>
       person.ids.map(itemId =>
-        context.$axios.$get(`https://storage.scrapinghub.com/items/434931/1${itemId}`, {
+        context.$axios.$get(`https://storage.scrapinghub.com/items/${itemId}`, {
           auth:
           {
             username: context.env.apiKey,
@@ -56,7 +56,7 @@ export default {
       paymentData._id = key + paymentData.Organismo
       acc[key].pays_per_organism.push(paymentData)
       return acc
-    }, {})).sort((a, b) => a._id.localeCompare(b._id))
+    }, {})).sort((a, b) => 12*a.Año.localeCompare(b.Año) + a.Mes_number - b.Mes_number)
     const paymentsData = {
       'Nombre completo': paymentsDataPreliminary.flat()[0]['Nombre completo'] || '',
       pays_per_date: paymentsDataPerDate,

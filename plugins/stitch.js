@@ -9,6 +9,6 @@ const mongodb = client.getServiceClient(
   'mongodb-atlas'
 )
 export default ({ app }, inject) => {
-  app.stitchDB = mongodb.db('remuneracion')
+  app.stitchCollection = mongodb.db('remuneracion').collection('05')
   app.stitchLogin = client.auth.loginWithCredential(new AnonymousCredential())
 }
