@@ -3,6 +3,7 @@ import {
   AnonymousCredential,
   RemoteMongoClient
 } from 'mongodb-stitch-server-sdk'
+import axiosRetry from 'axios-retry';
 const client = Stitch.hasAppClient('cuantoganachile-cdttj') ? Stitch.defaultAppClient : Stitch.initializeDefaultAppClient('cuantoganachile-cdttj')
 const mongodb = client.getServiceClient(
   RemoteMongoClient.factory,
@@ -46,7 +47,7 @@ export default {
   */
   buildModules: [
     ['@nuxtjs/eslint-module', { fix: true }],
-    '@nuxtjs/fontawesome',
+    '@nuxtjs/fontawesome'
   ],
   fontawesome: {
     icons: {
@@ -63,15 +64,21 @@ export default {
     '@nuxtjs/axios'
   ],
   axios: {
-    retry: true
+    retry: {
+      retries: 3,
+      retryCondition: (error) => {
+        return axiosRetry.isNetworkOrIdempotentRequestError(error) || error.response.status === 429
+      }
+    }
   },
   env: {
     apiKey: process.env.API_KEY
   },
   generate: {
     fallback: true,
+    interval: 200,
     routes () {
-        return mongodb.db('remuneracion').collection('05')
+      return mongodb.db('remuneracion').collection('05')
         .aggregate([
           {
             $group: {
@@ -79,9 +86,9 @@ export default {
                 name: '$name'
               }
             }
-          }]).toArray().then( result => result.map(item => '/' + encodeURIComponent(item._id.name))
-          )
-      }
+          }]).toArray().then(result => result.map(item => '/' + encodeURIComponent(item._id.name))
+        )
+    }
   },
   /*
   ** Build configuration
@@ -99,9 +106,9 @@ export default {
     */
     extend (config, ctx) {
       config.node = { fs: 'empty' }
-      if (!ctx.isServer) { 
-        config.resolve.alias = { 
-          ...config.resolve.alias, 
+      if (!ctx.isServer) {
+        config.resolve.alias = {
+          ...config.resolve.alias,
           'mongodb-stitch-server-sdk': 'mongodb-stitch-browser-sdk'
         }
       }

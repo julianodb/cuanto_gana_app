@@ -22,7 +22,16 @@ export default {
       .aggregate([
         {
           $match: {
-            name: name
+            name
+          }
+        },
+        {
+          $group: {
+            _id: {
+              name: '$name',
+              job: '$job'
+            },
+            indeces: { $push: '$index' }
           }
         },
         {
@@ -30,19 +39,21 @@ export default {
             _id: {
               name: '$name'
             },
-            ids: { $push: '$id' }
+            jobs: { $push: '$$ROOT' }
           }
         }]).toArray()
     const paymentsDataPreliminary = await Promise.all(paymentIds.flatMap(person =>
-      person.ids.map(itemId =>
-        context.$axios.$get(`https://storage.scrapinghub.com/items/${itemId}`, {
+      person.jobs.map((job) => {
+        const indeces = job.indeces.map(i => `index=${i}`).join('&')
+        const items = context.$axios.$get(`https://storage.scrapinghub.com/items/434931/1/${job._id.job}?${indeces}`, {
           auth:
-          {
-            username: context.env.apiKey,
-            password: ''
-          }
+            {
+              username: context.env.apiKey,
+              password: ''
+            }
         })
-      )
+        return items
+      })
     ))
     const paymentsDataPerDate = Object.values(paymentsDataPreliminary.flat().reduce((acc, paymentData) => {
       const key = paymentData['Año'] + paymentData.Mes_number + paymentData['Nombre completo']
@@ -56,7 +67,7 @@ export default {
       paymentData._id = key + paymentData.Organismo
       acc[key].pays_per_organism.push(paymentData)
       return acc
-    }, {})).sort((a, b) => 12*a.Año.localeCompare(b.Año) + a.Mes_number - b.Mes_number)
+    }, {})).sort((a, b) => 12 * a.Año.localeCompare(b.Año) + a.Mes_number - b.Mes_number)
     const paymentsData = {
       'Nombre completo': paymentsDataPreliminary.flat()[0]['Nombre completo'] || '',
       pays_per_date: paymentsDataPerDate,
@@ -74,7 +85,8 @@ export default {
                       'Año',
                       'Grado',
                       'Mes',
-                      'Asignaciones especiales'
+                      'Asignaciones especiales',
+                      'Observa'
                     ]
                     return (
                       keepThese.some(fragment => key.includes(fragment)) &&
